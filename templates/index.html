@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing SocketIO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.0/socket.io.js" integrity="sha512-+sXUwEYakGznuXubXLO/7LWSAPcm+U3NxMJaSu3S5OcvruAAAzaC50Uh4TW9KWj0hA6vfPAjB7E1uuIXgn9vmQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <script>
+        // Connect to the server
+        var socket = io();
+
+        // Emit the "message" event to the server
+        socket.emit('connection');
+
+        // Listen for events from the server
+        socket.on('server-message', (mes) => {
+            document.body.append(`<h3>${mes}</h3>`)
+        });
+    </script>
+</body>
+</html>
