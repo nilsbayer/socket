@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;     
+        }
+
+        #map-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            display: block;
+            width: 400%;
+            left: 0;
+        }
+
+        #player {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+        }
+
+        #player-internal {
+            transform-origin: center;
+            width: 2rem;
+            height: 2rem;
+            background-color: lightblue;
+            /* transition: transform .2s; */
+        }
+
+        #player span {
+            display: inline-block;
+            padding: 1rem 0;
+        }
+
+        .figure {
+            --fig-width: 2rem;
+            --fig-height: 2.5rem;
+            width: var(--fig-width);
+            height: var(--fig-height);
+            /* background-color: red; */
+            position: absolute;
+            transition: transform 2s;
+        }
+
+        .figure svg {
+            width: 100%;
+            position: absolute;
+            overflow: visible;
+        }
+
+        .shield {
+            transition: transform 1s;
+            transform-origin: top;
+            transform: rotateX(90deg);
+        }
+
+        .shields-active {
+            transform: rotateX(0);
+        }
+
+        /* Position 1 */
+
+        /* First row */
+        .pos1 .fig1 {
+            transform: translate(calc(var(--fig-width) * 0.5), 0);
+        }
+        /* Second row */
+        .pos1 .fig2 {
+            transform: translate(calc(var(--fig-width) * -1), calc(var(--fig-height) * 1));
+        }
+        .pos1 .fig3 {
+            transform: translate(calc(var(--fig-width) * 2), calc(var(--fig-height) * 1));
+        }
+        /* Third row  */
+        .pos1 .fig4 {
+            transform: translate(calc(var(--fig-width) * 0.5), calc(var(--fig-height) * 2));
+        }
+        /* Fourth row */
+        .pos1 .fig5 {
+            transform: translate(calc(var(--fig-width) * -1), calc(var(--fig-height) * 3));
+        }
+        .pos1 .fig6 {
+            transform: translate(calc(var(--fig-width) * 2), calc(var(--fig-height) * 3));
+        }
+        /* Fith row */
+        .pos1 .fig7 {
+            transform: translate(calc(var(--fig-width) * 0.5), calc(var(--fig-height) * 4));
+        }
+        /* Sixth row */
+        .pos1 .fig8 {
+            transform: translate(calc(var(--fig-width) * -1), calc(var(--fig-height) * 5));
+        }
+        .pos1 .fig9 {
+            transform: translate(calc(var(--fig-width) * 2), calc(var(--fig-height) * 5));
+        }
+
+        /* Position 2 */
+
+        /* First row  */
+        .pos2 .fig1 {
+            transform: translate(0, 0);
+        }
+        .pos2 .fig2 {
+            transform: translate(calc(var(--fig-width) * 1.5), 0);
+        }
+        .pos2 .fig3 {
+            transform: translate(calc(var(--fig-width) * 3), 0);
+        }
+
+        /* Second row  */
+        .pos2 .fig4 {
+            transform: translate(0, calc(var(--fig-width) * 1.75));
+        }
+        .pos2 .fig5 {
+            transform: translate(calc(var(--fig-width) * 1.5), calc(var(--fig-width) * 1.75));
+        }
+        .pos2 .fig6 {
+            transform: translate(calc(var(--fig-width) * 3), calc(var(--fig-width) * 1.75));
+        }
+
+        /* Third row */
+        .pos2 .fig7 {
+            transform: translate(0, calc(var(--fig-width) * 3.5));
+        }
+        .pos2 .fig8 {
+            transform: translate(calc(var(--fig-width) * 1.5), calc(var(--fig-width) * 3.5));
+        }
+        .pos2 .fig9 {
+            transform: translate(calc(var(--fig-width) * 3), calc(var(--fig-width) * 3.5));
+        }
+
+        /* Position 3 */
+
+        /* First row  */
+        .pos3 .fig1 {
+            transform: translate(0, 0) rotate(-45deg);
+        }
+        .pos3 .fig2 {
+            transform: translate(calc(var(--fig-width) * 1.5), calc(var(--fig-width) * -0.5));
+        }
+        .pos3 .fig3 {
+            transform: translate(calc(var(--fig-width) * 3), 0) rotate(45deg);
+        }
+
+        /* Second row  */
+        .pos3 .fig4 {
+            transform: translate(0, calc(var(--fig-width) * 1.75)) rotate(-90deg);
+        }
+        .pos3 .fig5 {
+            transform: translate(calc(var(--fig-width) * 1.5), calc(var(--fig-width) * 1.75));
+        }
+        .pos3 .fig6 {
+            transform: translate(calc(var(--fig-width) * 3), calc(var(--fig-width) * 1.75)) rotate(90deg);
+        }
+
+        /* Third row */
+        .pos3 .fig7 {
+            transform: translate(0, calc(var(--fig-width) * 3.5)) rotate(-135deg);
+        }
+        .pos3 .fig8 {
+            transform: translate(calc(var(--fig-width) * 1.5), calc(var(--fig-height) * 3.25));
+        }
+        .pos3 .fig9 {
+            transform: translate(calc(var(--fig-width) * 3), calc(var(--fig-width) * 3.5)) rotate(135deg);
+        }
+
+        /* Position 3 */
+        .pos4 .fig1 {
+            transform: translate(calc(var(--fig-width) * -5), 0);
+        }
+        .pos4 .fig2 {
+            transform: translate(calc(var(--fig-width) * -3.5), 0);
+        }
+        .pos4 .fig3 {
+            transform: translate(calc(var(--fig-width) * -2), 0);
+        }
+        .pos4 .fig4 {
+            transform: translate(calc(var(--fig-width) * -0.5), 0);
+        }
+        .pos4 .fig5 {
+            transform: translate(calc(var(--fig-width) * 1), 0);
+        }
+        .pos4 .fig6 {
+            transform: translate(calc(var(--fig-width) * 2.5), 0);
+        }
+        .pos4 .fig7 {
+            transform: translate(calc(var(--fig-width) * 4), 0);
+        }
+        .pos4 .fig8 {
+            transform: translate(calc(var(--fig-width) * 5.5), 0);
+        }
+        .pos4 .fig9 {
+            transform: translate(calc(var(--fig-width) * .25), calc(var(--fig-height) * 2));
+        }
+
+
+        /* Arrows  */
+        .arrows {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            transition: all 1s;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: black;
+        }
+
+        .on-flight {
+            animation: flying 2s;
+        }
+
+        @keyframes flying {
+            10% {
+                opacity: 1;
+            }
+            30% {
+                opacity: .2;
+            }
+            70% {
+                opacity: .2;
+            }
+            90% {
+                opacity: 1;
+            }
+        }
+
+        .spear-hit {
+            animation: spear-hit 1s;
+        }
+
+        @keyframes spear-hit {
+            50% {
+                transform: translateY(-70%);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <svg id="map" viewBox="0 0 4916 5453" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="background-group">
+                <g id="Group 16">
+                <rect id="Rectangle 31" width="4916" height="5453" fill="#CCD8C9"/>
+                <g id="Group 15">
+                <rect id="Rectangle 6" x="1728" y="3056" width="297" height="802" rx="20" fill="#E7E7E7"/>
+                <rect id="Rectangle 17" x="388" y="2822" width="297" height="1401" rx="20" transform="rotate(-90 388 2822)" fill="#E7E7E7"/>
+                <rect id="Rectangle 19" x="1728" y="2525" width="297" height="802" rx="20" fill="#E7E7E7"/>
+                <rect id="Rectangle 25" x="1992" y="2821" width="297" height="2402" rx="20" transform="rotate(-90 1992 2821)" fill="#E7E7E7"/>
+                <rect id="Rectangle 22" x="1728" y="1113" width="297" height="1432" rx="20" fill="#E7E7E7"/>
+                <rect id="Rectangle 23" x="2242" y="427" width="297" height="802" rx="20" fill="#E7E7E7"/>
+                <rect id="Rectangle 24" x="1728" y="1378" width="297" height="811" rx="20" transform="rotate(-90 1728 1378)" fill="#E7E7E7"/>
+                <rect id="Rectangle 8" x="2255" y="4058" width="297" height="802" rx="20" fill="#E7E7E7"/>
+                <rect id="Rectangle 7" x="1728" y="3854.59" width="297" height="802" rx="20" transform="rotate(-55.1011 1728 3854.59)" fill="#E7E7E7"/>
+                <rect class="blocker" x="2184" y="3294" width="248" height="327" fill="#DEB17D"/>
+                <rect class="blocker" x="2225" y="2126" width="244" height="244" fill="#DEB17D"/>
+                <rect class="blocker" x="2225" y="1535" width="244" height="244" fill="#DEB17D"/>
+                <rect class="blocker" x="2849" y="1535" width="244" height="244" fill="#DEB17D"/>
+                <rect class="blocker" x="2849" y="2126" width="244" height="244" fill="#DEB17D"/>
+                <rect class="blocker" x="2469" y="3388" width="502" height="467" fill="#DEB17D"/>
+                <rect class="blocker" x="3721" y="3019" width="502" height="874" fill="#DEB17D"/>
+                <rect class="blocker" x="854" y="2952" width="640" height="449" fill="#DEB17D"/>
+                <rect class="blocker" x="3677" y="4964.23" width="1100.3" height="87" rx="43.5" transform="rotate(-50.5129 3677 4964.23)" fill="#9A9A9A"/>
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(-0.635905 -0.771768 -0.771768 0.635905 1104.78 4964.23)" fill="#9A9A9A"/>
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(0 -1 -1 0 388 4154)" fill="#9A9A9A"/>
+                <g id="Group 13">
+                <rect class="blocker" x="2183.78" y="426.553" width="1182" height="87" rx="43.5" transform="rotate(-180 2183.78 426.553)" fill="#9A9A9A"/>
+                <rect class="blocker" x="1104.78" y="377.324" width="1182" height="87" rx="43.5" transform="rotate(129.487 1104.78 377.324)" fill="#9A9A9A"/>
+                <rect class="blocker" x="388" y="1187.55" width="1182" height="87" rx="43.5" transform="rotate(90 388 1187.55)" fill="#9A9A9A"/>
+                </g>
+                <g id="Group 14">
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(1 0 0 -1 2598 426.553)" fill="#9A9A9A"/>
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(0.635905 0.771768 0.771768 -0.635905 3677 377.324)" fill="#9A9A9A"/>
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(0 1 1 0 4393.78 1187.55)" fill="#9A9A9A"/>
+                </g>
+                <rect class="blocker" x="2598" y="4915" width="1182" height="87" rx="43.5" fill="#9A9A9A"/>
+                <rect class="blocker" width="1182" height="87" rx="43.5" transform="matrix(-1 0 0 1 2183.78 4915)" fill="#9A9A9A"/>
+                <rect class="blocker" width="1224" height="87" rx="43.5" transform="matrix(0 -1 -1 0 4430 4212)" fill="#9A9A9A"/>
+                </g>
+                </g>
+            </g>
+        </svg>
+    </div>
+    
+    <div id="player">
+        <span>Br3mm4n</span>
+        <div id="player-internal">
+            <div class="figure fig1">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig2">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig3">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig4">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig5">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig6">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig7">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig8">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="figure fig9">
+                <svg viewBox="0 0 46 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="roman">
+                    <circle id="Ellipse 2" cx="17.2234" cy="21.5" r="4.5" fill="#DABB80"/>
+                    <g id="Group 5">
+                    <path id="Rectangle 2" d="M17.7234 12.2953C17.7234 11.6012 18.149 10.9725 18.807 10.7517C21.8167 9.74159 23.9105 9.75594 26.9947 10.7559C27.6693 10.9746 28.1098 11.6144 28.1098 12.3235V12.3235C28.1098 13.447 27.0356 14.2487 25.9357 14.0202C23.6844 13.5524 21.9519 13.553 19.9171 13.9836C18.8136 14.2171 17.7234 13.4232 17.7234 12.2953V12.2953Z" fill="#919D9E"/>
+                    <path id="Rectangle 1" d="M0 16.8747C0 15.5365 0.993422 14.4019 2.32068 14.231C17.8333 12.2339 27.5997 12.2669 43.5467 14.2437C44.8704 14.4078 45.8649 15.5366 45.8649 16.8705V16.8705C45.8649 18.4759 44.4491 19.7125 42.8555 19.5174C27.9498 17.6931 18.2985 17.773 3.00885 19.5414C1.41139 19.7262 0 18.4829 0 16.8747V16.8747Z" fill="#ED634C"/>
+                    </g>
+                    <g class="spear">
+                    <rect id="Rectangle 4" x="31" y="6" width="2" height="39" rx="1" fill="#A77516"/>
+                    <path id="Polygon 1" d="M32 0L34.5981 7.5H29.4019L32 0Z" fill="url(#paint0_linear_26_1373)"/>
+                    </g>
+                    <circle id="Ellipse 1" cx="22.7234" cy="32" r="12" fill="url(#paint1_linear_26_1373)"/>
+                    <rect id="Rectangle 3" x="20.7234" y="22" width="4" height="25" rx="2" fill="#ED634C"/>
+                    </g>
+                    <defs>
+                    <linearGradient id="paint0_linear_26_1373" x1="32" y1="0" x2="32.0552" y2="7.17361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#A5A5A5"/>
+                    <stop offset="1" stop-color="#D0D0D0"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_26_1373" x1="10.7234" y1="32" x2="34.2234" y2="32.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E4E4E4"/>
+                    <stop offset="0.507699" stop-color="#BDBDBD"/>
+                    <stop offset="1" stop-color="#E8E8E8"/>
+                    </linearGradient>
+                    </defs>
+                </svg>
+                <svg class="shield" viewBox="0 0 46 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="shield">
+                    <rect id="Rectangle 32" width="46" height="81" rx="14" fill="#ED634C"/>
+                    <rect id="Rectangle 33" x="21" y="9" width="4" height="64" rx="2" fill="#EACA6F"/>
+                    <path id="Rectangle 34" d="M0 44L0 40H6C7.10457 40 8 40.8954 8 42V42C8 43.1046 7.10457 44 6 44H0Z" fill="#EACA6F"/>
+                    <path id="Rectangle 35" d="M46 44V40H40C38.8954 40 38 40.8954 38 42V42C38 43.1046 38.8954 44 40 44H46Z" fill="#EACA6F"/>
+                    <circle id="Ellipse 11" cx="23" cy="41" r="10" fill="#919D9E"/>
+                    <ellipse id="Ellipse 12" cx="23" cy="41.5" rx="5" ry="2.5" fill="#A5B4B4"/>
+                    <path id="Vector 1" d="M16.8878 31.1851C15.3383 31.6817 14.2792 33.1865 12.7555 36.0208C12.6173 36.2778 12.2846 36.3636 12.0418 36.2017C4.35321 31.076 4.84752 25.0516 8.82683 13.4291C8.99621 12.9344 9.72015 13.002 9.80281 13.5184C11.0147 21.0875 12.6653 25.2809 17.2178 30.1801C17.5133 30.4982 17.3012 31.0526 16.8878 31.1851Z" fill="#EACA6F"/>
+                    <path id="Vector 2" d="M29.1122 31.6851C30.6617 32.1817 31.7208 33.6865 33.2445 36.5208C33.3827 36.7778 33.7154 36.8636 33.9582 36.7017C41.6468 31.576 41.1525 25.5516 37.1732 13.9291C37.0038 13.4344 36.2799 13.502 36.1972 14.0184C34.9853 21.5875 33.3347 25.7809 28.7822 30.6801C28.4867 30.9982 28.6988 31.5526 29.1122 31.6851Z" fill="#EACA6F"/>
+                    <path id="Vector 3" d="M29.1122 50.3149C30.6617 49.8183 31.7208 48.3135 33.2445 45.4792C33.3827 45.2222 33.7154 45.1364 33.9582 45.2983C41.6468 50.424 41.1525 56.4484 37.1732 68.0709C37.0038 68.5656 36.2799 68.498 36.1972 67.9816C34.9853 60.4125 33.3347 56.2191 28.7822 51.3199C28.4867 51.0018 28.6988 50.4474 29.1122 50.3149Z" fill="#EACA6F"/>
+                    <path id="Vector 4" d="M16.8893 50.3149C15.3399 49.8183 14.2808 48.3135 12.7571 45.4792C12.6189 45.2222 12.2862 45.1364 12.0434 45.2983C4.3548 50.424 4.84911 56.4484 8.82842 68.0709C8.99779 68.5656 9.72173 68.498 9.8044 67.9816C11.0163 60.4125 12.6669 56.2191 17.2194 51.3199C17.5149 51.0018 17.3028 50.4474 16.8893 50.3149Z" fill="#EACA6F"/>
+                    </g>
+                </svg>
+            </div>
+            <!-- <div class="arrows"></div> -->
+
+    <script>
+        const player = document.getElementById("player")
+        const gameCanvas = document.getElementById("map")
+        const backgroundGroup = document.getElementById("background-group")
+        const slowAreas = document.querySelectorAll(".slow-area")
+
+        player.classList.add("pos1")
+
+        function calculateAngles(base, altitude) {
+            // Calculate the hypotenuse using the Pythagorean theorem
+            var hypotenuse = Math.sqrt(base * base + altitude * altitude);
+
+            // Calculate the angles using trigonometric functions
+            var angleA = Math.asin(altitude / hypotenuse) * (180 / Math.PI);
+            var angleB = Math.asin(base / hypotenuse) * (180 / Math.PI);
+            var angleC = 90; // Right angle
+
+            // Return the angles as an object
+            return {
+                angleA: angleA,
+                angleB: angleB,
+                angleC: angleC
+            };
+            }
+
+        window.addEventListener("mousemove", (e) => {
+            let playerMidX = player.getBoundingClientRect().left + (player.getBoundingClientRect().width / 2)
+            let playerMidY = player.getBoundingClientRect().top + (player.getBoundingClientRect().height * 2)
+
+            // let pointer = document.createElement("div")
+            // pointer.style.position = "absolute"
+            // pointer.style.width = "1rem"
+            // pointer.style.height = "1rem"
+            // pointer.style.borderRadius = "50%"
+            // pointer.style.backgroundColor = "green"
+            // pointer.style.top = playerMidY + "px"
+            // pointer.style.left = playerMidX + "px"
+            // document.body.append(pointer)
+
+            if ((e.clientX > playerMidX) && (e.clientY < playerMidY)) {
+                let base = Math.abs((e.clientX - playerMidX))
+                let altitude = Math.abs((e.clientY - playerMidY))
+
+                let angles = calculateAngles(base, altitude);
+                document.getElementById("player-internal").style.transform = `rotate(${angles.angleB}deg)`
+            }
+            else if ((e.clientX > playerMidX) && (e.clientY > playerMidY)) {
+                let base = Math.abs((e.clientX - playerMidX))
+                let altitude = Math.abs((e.clientY - playerMidY))
+                let angles = calculateAngles(base, altitude);
+                document.getElementById("player-internal").style.transform = `rotate(${angles.angleA +90}deg)`
+            }
+            else if ((e.clientX < playerMidX) && (e.clientY < playerMidY)) {
+                let base = Math.abs((e.clientX - playerMidX))
+                let altitude = Math.abs((e.clientY - playerMidY))
+
+                let angles = calculateAngles(base, altitude);
+                document.getElementById("player-internal").style.transform = `rotate(${angles.angleA + 270}deg)`
+            }
+            else if ((e.clientX < playerMidX) && (e.clientY > playerMidY)) {
+                let base = Math.abs((e.clientX - playerMidX))
+                let altitude = Math.abs((e.clientY - playerMidY))
+                let angles = calculateAngles(base, altitude);
+                document.getElementById("player-internal").style.transform = `rotate(${angles.angleB + 180}deg)`
+            }
+            
+        })
+
+        // Change positions
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "1") {
+                player.classList.remove("pos2")
+                player.classList.remove("pos3")
+                player.classList.remove("pos4")
+
+                player.classList.add("pos1")
+            }
+            if (e.key === "2") {
+                player.classList.remove("pos1")
+                player.classList.remove("pos3")
+                player.classList.remove("pos4")
+
+                player.classList.add("pos2")
+            }
+            if (e.key === "3") {
+                player.classList.remove("pos1")
+                player.classList.remove("pos2")
+                player.classList.remove("pos4")
+
+                player.classList.add("pos3")
+            }
+            if (e.key === "4") {
+                player.classList.remove("pos1")
+                player.classList.remove("pos2")
+                player.classList.remove("pos3")
+
+                player.classList.add("pos4")
+            }
+        })
+
+        var spearInMotion = false
+
+        window.addEventListener("click", (e) => {
+            if (spearInMotion === false) {
+                spearInMotion = true
+                document.querySelectorAll(".spear").forEach((item) => {
+                    // item.style.transform = "translateY(-80%)"
+                    item.classList.add("spear-hit")
+                    setTimeout(() => {
+                        item.classList.remove("spear-hit")
+                        spearInMotion = false
+                    }, 1000)
+                })
+            }
+            
+
+
+            // let currentPosX = document.querySelector(".arrows").getBoundingClientRect().left
+            // let currentPosY = document.querySelector(".arrows").getBoundingClientRect().top
+
+            // let arrowsToX = e.clientX
+            // let arrowsToY = e.clientY
+
+            // console.log("Arrow difference X:", Math.abs((currentPosX - arrowsToX)))
+            // console.log("Arrow difference Y:", Math.abs((currentPosY - arrowsToY)))
+
+            // let flightDuration;
+
+            // if ((Math.abs((currentPosX - arrowsToX)) > 300) || (Math.abs((currentPosY - arrowsToY)) > 300)) {
+            //     flightDuration = 2
+            //     document.querySelector(".arrows").style.transition = `all ${flightDuration}s`
+            // } 
+            // else {
+            //     flightDuration = 1
+            //     document.querySelector(".arrows").style.transition = `all ${flightDuration}s`
+            // }
+
+            // document.querySelector(".arrows").classList.add("on-flight")
+            // document.querySelector(".on-flight").style.animation = `flying ${flightDuration}s` 
+            // setTimeout(() => {
+            //     document.querySelector(".arrows").classList.remove("on-flight")
+            // }, (flightDuration * 1000))
+            // document.querySelector(".arrows").style.top = arrowsToY + "px"
+            // document.querySelector(".arrows").style.left = arrowsToX + "px"
+            // document.querySelector(".arrows").style.animation = `flying ${flightDuration}s`
+            
+        })
+
+        var leftpos = 0
+        var toppos = 0
+        var speedX = 0
+        var speedY = 0
+
+        function updateGame(){
+            leftpos += speedX
+            toppos += speedY
+            
+            if (backgroundGroup.getBoundingClientRect().top >= player.getBoundingClientRect().top && speedY > 0) {
+                toppos = player.getBoundingClientRect().top - player.getBoundingClientRect().height
+            }
+            if (backgroundGroup.getBoundingClientRect().bottom <= player.getBoundingClientRect().bottom && speedY < 0) {
+                toppos = player.getBoundingClientRect().top - backgroundGroup.getBoundingClientRect().height
+            }
+            if (backgroundGroup.getBoundingClientRect().right <= player.getBoundingClientRect().right && speedX < 0) {
+                leftpos = player.getBoundingClientRect().right - backgroundGroup.getBoundingClientRect().width
+            }
+            if (backgroundGroup.getBoundingClientRect().left >= player.getBoundingClientRect().left && speedX > 0) {
+                leftpos = player.getBoundingClientRect().left
+            }
+
+            gameCanvas.style.left = leftpos + 'px'
+            gameCanvas.style.top = toppos + 'px'
+            requestAnimationFrame(updateGame)
+        }
+        requestAnimationFrame(updateGame)
+
+        window.addEventListener("keydown", (e) => {
+            // console.log("Slow left:", slowArea.getBoundingClientRect().left, "player left:", player.getBoundingClientRect().left)
+            // console.log("Slow right:", slowArea.getBoundingClientRect().right, "player right:", player.getBoundingClientRect().right)
+            // console.log("Slow top:", slowArea.getBoundingClientRect().top, "player top:", player.getBoundingClientRect().top)
+            // console.log("Slow bottom:", slowArea.getBoundingClientRect().bottom, "player bottom:", player.getBoundingClientRect().bottom)
+
+            let groundCond = 1
+            var normalSpeed = 5
+
+            slowAreas.forEach(slowArea => {
+                if (slowArea.getBoundingClientRect().left <= player.getBoundingClientRect().left && slowArea.getBoundingClientRect().right >= player.getBoundingClientRect().right && slowArea.getBoundingClientRect().top <= player.getBoundingClientRect().top && slowArea.getBoundingClientRect().bottom >= player.getBoundingClientRect().bottom) {
+                    groundCond = 0.2
+                }
+            })
+
+            if (e.key === "d") {
+                speedX = (-1 *normalSpeed) * groundCond
+            }
+            if (e.key === "a") {
+                speedX = normalSpeed * groundCond
+            }
+            if (e.key === "w") {
+                speedY = normalSpeed * groundCond
+            }
+            if (e.key === "s") {
+                speedY = (-1 * normalSpeed) * groundCond
+            }
+        })
+
+        var shieldsActive = false
+
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "d") {
+                speedX = 0
+            }
+            if (e.key === "a") {
+                speedX = 0
+            }
+            if (e.key === "w") {
+                speedY = 0
+            }
+            if (e.key === "s") {
+                speedY = 0
+            }
+            if (e.key === "f") {
+                if (shieldsActive === false) {
+                    document.querySelectorAll(".shield").forEach(item => {
+                        // item.classList.toggle("shields-active")
+                        item.style.transform = "rotateX(0)"
+                    })
+                    shieldsActive = true
+                }
+                else {
+                    document.querySelectorAll(".shield").forEach(item => {
+                        // item.classList.toggle("shields-active")
+                        item.style.transform = "rotateX(90deg)"
+                    })
+                    shieldsActive = false
+                }
+            }
+        })
+    </script>
+</body>
+</html>
